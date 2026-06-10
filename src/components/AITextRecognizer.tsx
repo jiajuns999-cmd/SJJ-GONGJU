@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { recognizeTextWithZhipu, recognizeImageWithZhipu, fileToBase64 } from '../lib/aiService';
@@ -20,6 +20,36 @@ export default function AITextRecognizer({
   const [activeTab, setActiveTab] = useState<'text' | 'image'>('text');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 全局粘贴监听：弹窗打开时支持 Ctrl+V 粘贴图片到识别区
+  useEffect(() => {
+    if (!showModal) return;
+
+    const handleGlobalPaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.startsWith('image/')) {
+          e.preventDefault();
+          const blob = items[i].getAsFile();
+          if (blob) {
+            if (blob.size > 10 * 1024 * 1024) {
+              toast.error('图片文件大小不能超过10MB');
+              return;
+            }
+            setSelectedImage(blob);
+            setActiveTab('image');
+            toast.success('已粘贴图片，点击"开始识别"进行识别');
+          }
+          break;
+        }
+      }
+    };
+
+    document.addEventListener('paste', handleGlobalPaste);
+    return () => document.removeEventListener('paste', handleGlobalPaste);
+  }, [showModal]);
 
   const handleRecognize = async () => {
     setIsProcessing(true);
@@ -269,7 +299,7 @@ export default function AITextRecognizer({
                     />
                     <i className="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 mb-2"></i>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      点击或拖拽图片到此处上传
+                      点击上传或直接 Ctrl+V 粘贴图片
                     </p>
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                       支持 JPG、PNG、WEBP 格式，最大 10MB
