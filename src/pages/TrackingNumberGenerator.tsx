@@ -175,15 +175,13 @@ const getSavedTrackingNumbers = (): string[] => {
 };
 
     // 导出单号为Word文件 - 优化标题居中并移除日期显示
-  const exportAsWord = (numbers: string[], warehouseName: string, packageType: string, itemCount: string, channel: string, salesPersonId: string): void => {
+  const exportAsWord = (numbers: string[], warehouseName: string, packageType: string, itemCount: string, channel: string, businessOwnerText: string): void => {
      // 获取当前选中的仓库完整信息
      const selectedWarehouse = WAREHOUSES.find(w => w.name === warehouseName);
      const warehouseAddress = selectedWarehouse?.address || '';
      const isDongguanWarehouse = selectedWarehouse?.id === 'dongguan';
-     
-     // 获取选中的业务员信息
-     const salesContact = SALES_CONTACTS[salesPersonId];
-     const businessOwnerText = salesContact ? `${salesContact.name} 电话：${salesContact.phone}` : '沈家俊 电话：15856928662';
+    
+     // 业务员信息由调用方传入（已处理手动输入优先逻辑）
     
      // 创建HTML内容作为Word文档，按照进仓单预览格式，并调整样式确保在A4纸上完整显示
      let htmlContent = `
@@ -406,6 +404,9 @@ export default function TrackingNumberGenerator() {
   const [isNumbersExpanded, setIsNumbersExpanded] = useState(false);
   // 新增自定义代码状态
   const [customCode, setCustomCode] = useState<string>('');
+  // 自定义业务员和电话（手动输入优先于下拉选择）
+  const [customSalesPerson, setCustomSalesPerson] = useState<string>('');
+  const [customPhone, setCustomPhone] = useState<string>('');
   
   // 加载已保存的单号
   useEffect(() => {
@@ -470,7 +471,7 @@ export default function TrackingNumberGenerator() {
     selectedPackageType?.name || '',
     itemCount,
     channel,
-    salesPersonId
+    getSelectedSalesPerson()
   );
   };
   
@@ -523,8 +524,11 @@ export default function TrackingNumberGenerator() {
     }
   };
   
-  // 获取当前选中的业务员及电话
+  // 获取当前业务归属（手动输入优先，未填写则使用下拉选择）
   const getSelectedSalesPerson = (): string => {
+    if (customSalesPerson.trim() && customPhone.trim()) {
+      return `${customSalesPerson.trim()} 电话：${customPhone.trim()}`;
+    }
     const salesContact = SALES_CONTACTS[salesPersonId];
     return salesContact ? `${salesContact.name} 电话：${salesContact.phone}` : '沈家俊 电话：15856928662';
   };
@@ -655,6 +659,42 @@ export default function TrackingNumberGenerator() {
                      </option>
                    ))}
                  </select>
+               </div>
+
+               {/* 自定义业务员（手动输入） */}
+               <div>
+                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                   业务员 <span className="text-xs text-gray-400">(手动输入)</span>
+                 </label>
+                 <input
+                   type="text"
+                   value={customSalesPerson}
+                   onChange={(e) => setCustomSalesPerson(e.target.value)}
+                   placeholder="填写后优先显示，覆盖上方选择"
+                   className={`w-full px-3 py-2 rounded-xl border ${
+                     isDark 
+                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
+                       : 'bg-gray-50 border-gray-200 placeholder-gray-400'
+                   } focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
+                 />
+               </div>
+
+               {/* 自定义电话（手动输入） */}
+               <div>
+                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                   电话 <span className="text-xs text-gray-400">(手动输入)</span>
+                 </label>
+                 <input
+                   type="text"
+                   value={customPhone}
+                   onChange={(e) => setCustomPhone(e.target.value)}
+                   placeholder="填写后优先显示，覆盖上方选择"
+                   className={`w-full px-3 py-2 rounded-xl border ${
+                     isDark 
+                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500' 
+                       : 'bg-gray-50 border-gray-200 placeholder-gray-400'
+                   } focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
+                 />
                </div>
                
                {/* 走货渠道 */}
