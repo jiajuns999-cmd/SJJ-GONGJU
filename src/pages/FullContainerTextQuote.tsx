@@ -19,7 +19,9 @@ interface QuoteHistory {
 
 // 定义表单数据接口
 interface FormData {
-  project: string;
+  productName: string; // 品名
+  hsCode: string; // HS编码
+  declaredValue: string; // 货值
   containerType: string; // 柜型字段
   destination: string;
   seaFreight: string;
@@ -39,7 +41,9 @@ export default function FullContainerTextQuote() {
   
   // 表单数据状态
   const [formData, setFormData] = useState<FormData>({
-    project: "",
+    productName: "",
+    hsCode: "",
+    declaredValue: "",
     containerType: "", // 柜型字段
     destination: "",
     seaFreight: "",
@@ -122,7 +126,15 @@ export default function FullContainerTextQuote() {
     let quoteText = "";
     
   // 添加产品信息
-  quoteText += `产品信息：${formData.project || "未指定"}`;
+  quoteText += `产品信息：${formData.productName || "未指定"}`;
+  if (formData.hsCode) {
+    quoteText += `
+  HS编码：${formData.hsCode}`;
+  }
+  if (formData.declaredValue) {
+    quoteText += `
+  货值：${formData.declaredValue}`;
+  }
   
    // 添加柜型信息
   if (formData.containerType) {
@@ -253,11 +265,31 @@ export default function FullContainerTextQuote() {
     `;
     
     // 添加产品信息
-    if (formData.project) {
+    if (formData.productName) {
       tableRows += `
         <tr>
-          <td class="border px-4 py-2 font-medium">产品信息</td>
-          <td class="border px-4 py-2">${formData.project}</td>
+          <td class="border px-4 py-2 font-medium">品名</td>
+          <td class="border px-4 py-2">${formData.productName}</td>
+        </tr>
+      `;
+    }
+    
+    // 添加HS编码
+    if (formData.hsCode) {
+      tableRows += `
+        <tr>
+          <td class="border px-4 py-2 font-medium">HS编码</td>
+          <td class="border px-4 py-2">${formData.hsCode}</td>
+        </tr>
+      `;
+    }
+    
+    // 添加货值
+    if (formData.declaredValue) {
+      tableRows += `
+        <tr>
+          <td class="border px-4 py-2 font-medium">货值</td>
+          <td class="border px-4 py-2">${formData.declaredValue}</td>
         </tr>
       `;
     }
@@ -523,10 +555,10 @@ export default function FullContainerTextQuote() {
     // 设置文件名
     const date = new Date();
     const shortDate = `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    const project = formData.project || '未命名项目';
+    const productName = formData.productName || '未命名项目';
     const destination = formData.destination || '未指定目的港';
     
-    a.download = `${shortDate}_${project}_${destination}_整柜报价单.doc`;
+    a.download = `${shortDate}_${productName}_${destination}_整柜报价单.doc`;
     
     // 触发下载
     document.body.appendChild(a);
@@ -541,15 +573,15 @@ export default function FullContainerTextQuote() {
   
   // 保存报价到历史记录
   const saveQuote = () => {
-    if (!formData.project || !formData.destination) {
-      toast.error("请至少填写项目和目的港");
+    if (!formData.productName || !formData.destination) {
+      toast.error("请至少填写品名和目的港");
       return;
     }
     
     const newHistoryItem: QuoteHistory = {
       id: Date.now().toString(),
       timestamp: new Date(),
-      project: formData.project,
+      project: formData.productName,
       destination: formData.destination,
       totalPrice: quoteTotal,
       note: ""
@@ -567,7 +599,9 @@ export default function FullContainerTextQuote() {
   // 重置表单
   const resetForm = () => {
     setFormData({
-      project: "",
+      productName: "",
+      hsCode: "",
+      declaredValue: "",
       containerType: "", // 重置柜型字段
       destination: "",
       seaFreight: "",
@@ -616,7 +650,9 @@ export default function FullContainerTextQuote() {
                  // 处理识别结果并填充到表单
                   setFormData(prev => ({
                     ...prev,
-                    project: data.project || '',
+                    productName: data.productName || '',
+                    hsCode: data.hsCode || '',
+                    declaredValue: data.declaredValue || '',
                     containerType: data.containerType || '',
                     destination: data.destination || '',
                     seaFreight: data.seaFreight || '',
@@ -655,20 +691,54 @@ export default function FullContainerTextQuote() {
             <h2 className="text-xl font-bold mb-6 dark:text-white">填写报价信息</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              {/* 项目 */}
-               <div className="md:col-span-2">
+              {/* 品名 */}
+               <div>
                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                   产品信息 <span className="text-red-500">*</span>
+                   品名 <span className="text-red-500">*</span>
                  </label>
                  <input 
                    type="text" 
-                   name="project" 
-                   value={formData.project}
+                   name="productName" 
+                   value={formData.productName}
                    onChange={handleInputChange}
                    className={`w-full px-4 py-2 rounded-xl border ${
                      isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-50 border-gray-200"
                    } focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
-                   placeholder="请输入项目名称"
+                   placeholder="请输入品名"
+                 />
+               </div>
+
+               {/* HS编码 */}
+               <div>
+                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                   HS编码 <span className="text-gray-500">(选填)</span>
+                 </label>
+                 <input 
+                   type="text" 
+                   name="hsCode" 
+                   value={formData.hsCode}
+                   onChange={handleInputChange}
+                   className={`w-full px-4 py-2 rounded-xl border ${
+                     isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-50 border-gray-200"
+                   } focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
+                   placeholder="请输入HS编码"
+                 />
+               </div>
+
+               {/* 货值 */}
+               <div>
+                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                   货值 <span className="text-gray-500">(选填)</span>
+                 </label>
+                 <input 
+                   type="text" 
+                   name="declaredValue" 
+                   value={formData.declaredValue}
+                   onChange={handleInputChange}
+                   className={`w-full px-4 py-2 rounded-xl border ${
+                     isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-50 border-gray-200"
+                   } focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
+                   placeholder="请输入货值"
                  />
                </div>
                

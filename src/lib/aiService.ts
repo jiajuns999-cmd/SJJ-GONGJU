@@ -39,15 +39,18 @@ export async function recognizeTextWithZhipu(text: string, toolType: 'textQuote'
 文本内容：${text}`;
      } else if (toolType === 'fullContainerQuote') {
       // 整柜文字报价工具的识别模板 - 完全独立于其他工具的识别逻辑
-      systemPrompt = "你是一个专业的整柜物流报价信息识别助手，需要从用户提供的文本中精准提取整柜物流报价相关信息。请以结构化的JSON格式返回识别结果，确保数据准确无误。";
+      systemPrompt = "你是一个专业的整柜物流报价信息识别助手，需要从用户提供的文本中精准提取整柜物流报价相关信息。特别需要注意识别品名、HS编码和货值这三个独立字段。请以结构化的JSON格式返回识别结果，确保数据准确无误。";
       userPrompt = `请严格按照以下要求从文本中提取信息：
-1. 重点识别：项目(project)、柜型(containerType)、起运港和目的港（合并为destination字段，格式：起运港-目的港，例如：天津港（CNTXG）-芝加哥（USCHI））、汇率(exchangeRate)、船公司(shippingCompany)、海运费(seaFreight)、国内港杂(domesticPortFee)、国外关税(foreignCustomsDuty)、国内拖车费(domesticTruckingFee)、国外拖车费(foreignTruckingFee)、收件地址(receiverAddress)、报价补充信息（放入note字段）等信息
-2. 确保每个字段都使用英文名称作为键名
-3. 国外港杂(foreignPortFee)固定填入"700"
-4. 请完全忽略任何与尺寸、重量相关的信息，也不要处理任何与文字报价或计算报价工具相关的内容
-5. 请以严格的JSON格式返回结果，不要包含任何额外的解释或说明文字，只返回识别到的字段：
+1. 重点识别：品名(productName)、HS编码(hsCode)、货值(declaredValue)、柜型(containerType)、起运港和目的港（合并为destination字段，格式：起运港-目的港，例如：天津港（CNTXG）-芝加哥（USCHI））、汇率(exchangeRate)、船公司(shippingCompany)、海运费(seaFreight)、国内港杂(domesticPortFee)、国外关税(foreignCustomsDuty)、国内拖车费(domesticTruckingFee)、国外拖车费(foreignTruckingFee)、收件地址(receiverAddress)、报价补充信息（放入note字段）等信息
+2. 品名、HS编码、货值是三个独立字段，请务必分别识别
+3. 确保每个字段都使用英文名称作为键名
+4. 国外港杂(foreignPortFee)固定填入"700"
+5. 请完全忽略任何与尺寸、重量相关的信息，也不要处理任何与文字报价或计算报价工具相关的内容
+6. 请以严格的JSON格式返回结果，不要包含任何额外的解释或说明文字，只返回识别到的字段：
 {
-  "project": "识别到的项目",
+  "productName": "识别到的品名",
+  "hsCode": "识别到的HS编码",
+  "declaredValue": "识别到的货值",
   "containerType": "识别到的柜型",
   "destination": "识别到的起运港和目的港（格式：起运港-目的港）",
   "exchangeRate": "识别到的汇率",
@@ -277,7 +280,9 @@ function getMockImageRecognitionResult(toolType: string): any {
       };
     case 'fullContainerQuote':
       return {
-        project: "家具出口",
+        productName: "家具出口",
+        hsCode: "9403.60",
+        declaredValue: "50000",
         containerType: "40HQ",
         destination: "天津港（CNTXG）-芝加哥（USCHI）",
         exchangeRate: "7.2",
