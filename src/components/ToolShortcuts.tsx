@@ -61,6 +61,14 @@ interface Tool {
     icon: 'fa-file-invoice',
     color: 'from-purple-400 to-pink-500',
     link: '/tracking-number-generator'
+  },
+  {
+    id: 'broadcast-copywriter',
+    title: '群发文案',
+    description: 'AI 一键生成微信群发文案，营销推广与问候关怀全覆盖',
+    icon: 'fa-paper-plane',
+    color: 'from-rose-400 to-pink-500',
+    link: '/broadcast-copywriter'
   }
 ]
 

@@ -6,6 +6,7 @@ import CombinedCalculator from "@/pages/CombinedCalculator";
 import WeightPriceCalculator from "@/pages/WeightPriceCalculator";
 import FullContainerTextQuote from "@/pages/FullContainerTextQuote";
 import InquiryOrganizer from "@/pages/InquiryOrganizer";
+import BroadcastCopywriter from "@/pages/BroadcastCopywriter";
 import { useTheme } from "@/hooks/useTheme";
 import { QuoteSyncProvider } from "@/contexts/quoteSyncContext";
 
@@ -25,6 +26,7 @@ export default function App() {
               <Route path="/weight-price-calculator" element={<WeightPriceCalculator />} />
               <Route path="/full-container-text-quote" element={<FullContainerTextQuote />} />
               <Route path="/inquiry-organizer" element={<InquiryOrganizer />} />
+              <Route path="/broadcast-copywriter" element={<BroadcastCopywriter />} />
             </Routes>
           </div>
         </div>
