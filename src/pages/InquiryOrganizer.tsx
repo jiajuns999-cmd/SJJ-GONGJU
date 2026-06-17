@@ -127,25 +127,26 @@ export default function InquiryOrganizer() {
   };
   
    // 生成询价文本
-   const generateInquiryText = () => {
-     let text = `询价--${inquiryData.serviceProvider || ""}--${inquiryData.channel || ""}\n`;
-     text += `国家；${inquiryData.country || ""}\n`;
-     text += `品名；${inquiryData.product || ""}\n`;
+   const generateInquiryText = (latestData?: InquiryData) => {
+     const d = latestData ?? inquiryData;
+     let text = `询价--${d.serviceProvider || ""}--${d.channel || ""}\n`;
+     text += `国家；${d.country || ""}\n`;
+     text += `品名；${d.product || ""}\n`;
      
      // 处理尺寸信息
      text += "尺寸:\n";
-     if (inquiryData.items.length > 0) {
-       inquiryData.items.forEach((item, index) => {
+     if (d.items.length > 0) {
+       d.items.forEach((item, index) => {
          if (item.length > 0 && item.width > 0 && item.height > 0) {
            text += `${index + 1}. 长${item.length}cm × 宽${item.width}cm × 高${item.height}cm × ${item.weight}kg × ${item.quantity}件\n`;
          }
        });
      }
      
-     text += `总重量；${inquiryData.totalWeight || ""}\n`;
-     text += `总方数；${inquiryData.totalVolume || ""}\n`;
-     text += `邮编；${inquiryData.zipCode || ""}\n`;
-     text += `地址；${inquiryData.address || ""}\n`;
+     text += `总重量；${d.totalWeight || ""}\n`;
+     text += `总方数；${d.totalVolume || ""}\n`;
+     text += `邮编；${d.zipCode || ""}\n`;
+     text += `地址；${d.address || ""}\n`;
      
      setGeneratedText(text);
    };
@@ -164,18 +165,18 @@ export default function InquiryOrganizer() {
     // 计算并更新总重量和总方数
     const { totalWeight, totalVolume } = calculateTotals(items);
     
-    setInquiryData({
+    // 保留已填写的 serviceProvider 和 channel，只更新 AI 识别字段
+    setInquiryData(prev => ({
+      ...prev,
       country: data.country || "",
       product: data.product || "",
       items,
-      totalWeight,
-      totalVolume,
+      totalWeight: data.totalWeight || totalWeight,
+      totalVolume: data.totalVolume || totalVolume,
       zipCode: data.zipCode || "",
       address: data.address || ""
-    });
-    
-    // 自动生成询价文本
-    setTimeout(generateInquiryText, 300);
+    }));
+    // useEffect 监听 inquiryData 变化，自动触发 generateInquiryText
   };
   
   // 重置表单
@@ -207,9 +208,10 @@ export default function InquiryOrganizer() {
     }
   }, [inquiryData.items]);
   
-  // 实时生成询价文本
+  // 实时生成询价文本（传入最新 state 避免 stale closure）
   useEffect(() => {
-    generateInquiryText();
+    generateInquiryText(inquiryData);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inquiryData]);
   
   return (
