@@ -44,7 +44,7 @@ const HOLIDAYS = [
 ];
 
 // ============ AI 文案生成 ============
-const ZHIPU_API_KEY = "13968110e81a4cb1b255aa578b83f690.8K0K6FGm4VfeOFAI";
+const ZHIPU_API_KEY = "sk-rkcwdaxjmgxvizijforsnzapizizmvvyinweutiqajjmytyd";
 const ZHIPU_API_BASE_URL = "https://open.bigmodel.cn/api/paas/v4";
 
 async function generateCopyWithAI(params: {
