@@ -128,7 +128,7 @@ export async function recognizeTextWithZhipu(text: string, toolType: 'textQuote'
         "Authorization": `Bearer ${ZHIPU_API_KEY}`
       },
       body: JSON.stringify({
-        model: "tencent/Hunyuan-MT-7B",
+        model: "deepseek-ai/DeepSeek-V4-Pro",
         messages: [
           {
             role: "system",
