@@ -3,7 +3,7 @@
  */
 
 // 智谱API基础配置
-const ZHIPU_API_KEY = "3908a4b9a43a4ced97eb2c932a8f39a7.vcHYXmk3qs5FhxJK";
+const ZHIPU_API_KEY = "13968110e81a4cb1b255aa578b83f690.8K0K6FGm4VfeOFAI";
 const ZHIPU_API_BASE_URL = "https://open.bigmodel.cn/api/paas/v4";
 
 /**
