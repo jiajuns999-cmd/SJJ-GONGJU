@@ -7,6 +7,7 @@ import WeightPriceCalculator from "@/pages/WeightPriceCalculator";
 import FullContainerTextQuote from "@/pages/FullContainerTextQuote";
 import InquiryOrganizer from "@/pages/InquiryOrganizer";
 import BroadcastCopywriter from "@/pages/BroadcastCopywriter";
+import AIModelBadge from "@/components/AIModelBadge";
 import { useTheme } from "@/hooks/useTheme";
 import { QuoteSyncProvider } from "@/contexts/quoteSyncContext";
 
@@ -28,6 +29,7 @@ export default function App() {
               <Route path="/inquiry-organizer" element={<InquiryOrganizer />} />
               <Route path="/broadcast-copywriter" element={<BroadcastCopywriter />} />
             </Routes>
+            <AIModelBadge />
           </div>
         </div>
       </BrowserRouter>
