@@ -45,7 +45,7 @@ const HOLIDAYS = [
 
 // ============ AI 文案生成 ============
 const ZHIPU_API_KEY = "sk-rkcwdaxjmgxvizijforsnzapizizmvvyinweutiqajjmytyd";
-const ZHIPU_API_BASE_URL = "https://open.bigmodel.cn/api/paas/v4";
+const ZHIPU_API_BASE_URL = "https://api.siliconflow.cn/v1";
 
 async function generateCopyWithAI(params: {
   type: "marketing" | "greeting";
@@ -130,7 +130,7 @@ ${COMPANY_PROFILE}
         "Authorization": `Bearer ${ZHIPU_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "glm-4-plus",
+        model: "deepseek-ai/DeepSeek-V3",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },

@@ -4,7 +4,7 @@
 
 // 智谱API基础配置
 const ZHIPU_API_KEY = "sk-rkcwdaxjmgxvizijforsnzapizizmvvyinweutiqajjmytyd";
-const ZHIPU_API_BASE_URL = "https://open.bigmodel.cn/api/paas/v4";
+const ZHIPU_API_BASE_URL = "https://api.siliconflow.cn/v1";
 
 /**
  * 调用智谱API进行文本识别 - 根据不同工具类型使用不同的识别模板
@@ -128,7 +128,7 @@ export async function recognizeTextWithZhipu(text: string, toolType: 'textQuote'
         "Authorization": `Bearer ${ZHIPU_API_KEY}`
       },
       body: JSON.stringify({
-        model: "glm-4-plus",
+        model: "deepseek-ai/DeepSeek-V3",
         messages: [
           {
             role: "system",
@@ -287,7 +287,7 @@ export async function recognizeImageWithZhipu(imageBase64: string, toolType: 'te
         "Authorization": `Bearer ${ZHIPU_API_KEY}`
       },
       body: JSON.stringify({
-        model: "glm-4v-plus",
+        model: "Qwen/Qwen2.5-VL-72B-Instruct",
         messages: [
           {
             role: "system",
