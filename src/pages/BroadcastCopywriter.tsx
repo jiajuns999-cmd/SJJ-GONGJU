@@ -130,7 +130,7 @@ ${COMPANY_PROFILE}
         "Authorization": `Bearer ${ZHIPU_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "deepseek-ai/DeepSeek-V3",
+        model: "tencent/Hunyuan-MT-7B",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
