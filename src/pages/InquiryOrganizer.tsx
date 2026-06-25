@@ -175,8 +175,8 @@ export default function InquiryOrganizer() {
       country: data.country || "",
       product: data.product || "",
       items,
-      totalWeight: data.totalWeight || totalWeight,
-      totalVolume: data.totalVolume || totalVolume,
+      totalWeight: data.totalWeight ? parseFloat(data.totalWeight).toFixed(2) : totalWeight,
+      totalVolume: data.totalVolume ? parseFloat(data.totalVolume).toFixed(2) : totalVolume,
       zipCode: data.zipCode || "",
       address: data.address || ""
     }));
