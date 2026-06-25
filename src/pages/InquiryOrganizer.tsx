@@ -39,7 +39,8 @@ export default function InquiryOrganizer() {
     zipCode: "",
     address: "",
     serviceProvider: "",
-    channel: ""
+    channel: "",
+    remarks: ""
   });
   
   // 生成的询价文本状态
@@ -144,13 +145,11 @@ export default function InquiryOrganizer() {
        });
      }
      
-     text += `总重量；${d.totalWeight || ""}\n`;
-     text += `总方数；${d.totalVolume || ""}\n`;
+     text += `总重量；${d.totalWeight ? parseFloat(d.totalWeight).toFixed(2) : ""}\n`;
+     text += `总方数；${d.totalVolume ? parseFloat(d.totalVolume).toFixed(2) : ""}\n`;
      text += `邮编；${d.zipCode || ""}\n`;
      text += `地址；${d.address || ""}\n`;
-     if (d.remarks) {
-       text += `备注；${d.remarks}\n`;
-     }
+     text += `备注；${d.remarks || ""}\n`;
      
      setGeneratedText(text);
    };
