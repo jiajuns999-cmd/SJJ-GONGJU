@@ -188,6 +188,15 @@ export default function TextQuote() {
   
   // 新增状态：自定义国家输入
   const [customCountry, setCustomCountry] = useState("");
+  
+  // 渠道 Combobox 状态
+  const [channelInputValue, setChannelInputValue] = useState("");
+  const [showChannelDropdown, setShowChannelDropdown] = useState(false);
+  
+  // 同步 channelInputValue 与 formData.channel
+  useEffect(() => {
+    setChannelInputValue(formData.channel);
+  }, [formData.channel]);
 
     useEffect(() => {
         const savedHistory = localStorage.getItem("quoteHistory");
@@ -972,13 +981,21 @@ ${getNotes()}`;
                             }
                             
                             // 确保只处理文字报价相关数据，严格过滤掉任何可能混入的尺寸相关字段
+                            // 计费重、预估件数只保留纯数字（去掉单位等）
+                            const cleanNumber = (val: any) => {
+                              if (!val) return '';
+                              const str = String(val);
+                              // 提取数字（包括小数）
+                              const match = str.match(/[\d.]+/);
+                              return match ? match[0] : '';
+                            };
                             const textQuoteData = {
                               country: data.country || '',
                               address: data.address || '',
                               zipCode: data.zipCode || '',
                               product: data.product || '',
-                              chargeableWeight: data.chargeableWeight || '',
-                              estimatedQuantity: data.estimatedQuantity || ''
+                              chargeableWeight: cleanNumber(data.chargeableWeight),
+                              estimatedQuantity: cleanNumber(data.estimatedQuantity)
                               // 明确不包含任何尺寸相关字段
                             };
                             
@@ -1231,22 +1248,42 @@ ${getNotes()}`;
                              {}
                              {}
                              {/* 渠道，地址一行 */}
-                            <div>
+                            <div className="relative">
                                 <label
                                     className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">渠道
                                                        </label>
-                                <select
-                                    name="channel"
-                                    value={formData.channel}
-                                    onChange={handleInputChange}
-                                    className={`w-full px-4 py-2 rounded-xl border ${isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-50 border-gray-200"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all appearance-none`}>
-                                    <option value="">请选择</option>
-                                    {CHANNEL_OPTIONS.map(option => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
+                                <input
+                                    type="text"
+                                    value={channelInputValue}
+                                    onChange={(e) => {
+                                      setChannelInputValue(e.target.value);
+                                      setFormData(prev => ({ ...prev, channel: e.target.value }));
+                                    }}
+                                    onFocus={() => setShowChannelDropdown(true)}
+                                    onBlur={() => setTimeout(() => setShowChannelDropdown(false), 200)}
+                                    placeholder="请选择或输入渠道"
+                                    className={`w-full px-4 py-2 rounded-xl border ${isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-50 border-gray-200"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
+                                />
+                                {/* 下拉选项 */}
+                                {showChannelDropdown && (
+                                  <div className={`absolute z-10 w-full mt-1 max-h-40 overflow-auto rounded-xl border shadow-lg ${isDark ? "bg-gray-700 border-gray-600" : "bg-white border-gray-200"}`}>
+                                    {CHANNEL_OPTIONS.filter(opt =>
+                                      !channelInputValue || opt.label.includes(channelInputValue) || opt.value.includes(channelInputValue)
+                                    ).map(option => (
+                                      <div
+                                        key={option.value}
+                                        onMouseDown={() => {
+                                          setFormData(prev => ({ ...prev, channel: option.value }));
+                                          setChannelInputValue(option.label);
+                                          setShowChannelDropdown(false);
+                                        }}
+                                        className={`px-4 py-2 cursor-pointer text-sm ${isDark ? "hover:bg-gray-600 text-white" : "hover:bg-blue-50 text-gray-800"}`}
+                                      >
+                                        {option.label}
+                                      </div>
                                     ))}
-                                </select>
+                                  </div>
+                                )}
                             </div>
                             {/* 地址输入框 */}
                             <div>
