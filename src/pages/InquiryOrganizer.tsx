@@ -23,6 +23,7 @@ interface InquiryData {
   address: string;
   serviceProvider: string;
   channel: string;
+  remarks: string;
 }
 
 export default function InquiryOrganizer() {
@@ -61,7 +62,7 @@ export default function InquiryOrganizer() {
     
     return {
       totalWeight: totalWeight.toFixed(2),
-      totalVolume: totalVolume.toFixed(6)
+      totalVolume: totalVolume.toFixed(2)
     };
   };
   
@@ -147,6 +148,9 @@ export default function InquiryOrganizer() {
      text += `总方数；${d.totalVolume || ""}\n`;
      text += `邮编；${d.zipCode || ""}\n`;
      text += `地址；${d.address || ""}\n`;
+     if (d.remarks) {
+       text += `备注；${d.remarks}\n`;
+     }
      
      setGeneratedText(text);
    };
@@ -190,7 +194,8 @@ export default function InquiryOrganizer() {
       zipCode: "",
       address: "",
       serviceProvider: "",
-      channel: ""
+      channel: "",
+      remarks: ""
     });
     setGeneratedText("");
     toast.info("已重置表单内容");
@@ -501,6 +506,22 @@ export default function InquiryOrganizer() {
                    } focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
                    placeholder="请输入地址"
                    rows={3}
+                 ></textarea>
+               </div>
+               
+               {/* 备注 */}
+               <div className="md:col-span-2">
+                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                   备注
+                 </label>
+                 <textarea
+                   value={inquiryData.remarks}
+                   onChange={(e) => handleInputChange('remarks', e.target.value)}
+                   className={`w-full px-4 py-2 rounded-xl border ${
+                     isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-50 border-gray-200"
+                   } focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
+                   placeholder="请输入备注信息（将同步到询价文本）"
+                   rows={2}
                  ></textarea>
                </div>
             </div>
