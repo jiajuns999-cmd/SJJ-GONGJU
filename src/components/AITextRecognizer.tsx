@@ -93,11 +93,6 @@ export default function AITextRecognizer({
     }
   };
 
-  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
-    e.preventDefault();
-    const pastedText = e.clipboardData.getData('text');
-    setInputText(pastedText);
-  };
 
   // 提供示例输入，根据工具类型提供不同的示例
   const handleExampleClick = () => {
@@ -243,7 +238,6 @@ export default function AITextRecognizer({
                 <textarea
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
-                  onPaste={handlePaste}
                   placeholder={placeholder}
                   className={`w-full px-4 py-3 rounded-xl border h-48 ${
                     isProcessing
