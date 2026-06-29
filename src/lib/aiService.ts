@@ -181,12 +181,16 @@ function buildImageRecognitionPrompts(toolType: string): { systemPrompt: string;
   } else if (toolType === 'inquiryOrganizer') {
     return {
       systemPrompt: "你是一个专业的物流询价视觉识别助手。请仔细观察图片提取询价信息。",
-      userPrompt: `请仔细观察这张图片，提取询价信息，严格JSON格式返回：{"country":"","product":"","items":[{"length":数值cm,"width":数值cm,"height":数值cm,"weight":数值kg,"quantity":数值}],"totalWeight":"","totalVolume":"","zipCode":"","address":""}。只返回JSON。`
+      userPrompt: `请仔细观察这张图片，提取询价信息，只返回JSON（尺寸用厘米，重量用千克，数值用数字类型）：
+{"country":"中国","product":"电子产品","items":[{"length":30,"width":20,"height":15,"weight":2.5,"quantity":10}],"totalWeight":"25","totalVolume":"0.09","zipCode":"10001","address":"纽约"}
+以上仅为格式示例，请按图片实际内容填写。只返回JSON，不要任何解释文字。`
     };
   } else {
     return {
       systemPrompt: "你是一个专业的物流尺寸视觉识别助手。请仔细观察图片提取货物尺寸重量信息。",
-      userPrompt: `请仔细观察这张图片，提取货物尺寸重量信息，严格JSON格式返回：{"items":[{"length":数值cm,"width":数值cm,"height":数值cm,"weight":数值kg,"quantity":数值}]}。注意将所有尺寸单位转换为厘米(cm)。只返回JSON。`
+      userPrompt: `请仔细观察这张图片，提取货物尺寸重量信息，只返回JSON（尺寸统一为厘米，重量为千克，数值用数字类型）：
+{"items":[{"length":30,"width":20,"height":15,"weight":2.5,"quantity":10}]}
+以上仅为格式示例，请按图片实际内容填写。只返回JSON，不要任何解释文字。`
     };
   }
 }

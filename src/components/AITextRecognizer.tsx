@@ -78,7 +78,7 @@ export default function AITextRecognizer({
       }
       
       onRecognize(result);
-      toast.success("AI识别成功！已自动填充相关信息");
+      // 重置状态（识别完成的toast由父组件负责，避免误报）
       
       // 重置状态
       setShowModal(false);

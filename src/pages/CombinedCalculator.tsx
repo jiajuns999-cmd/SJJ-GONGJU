@@ -541,11 +541,17 @@ export default function CombinedCalculator() {
                            // 准备更新的货物项，只处理尺寸、重量和件数相关数据
                            const updatedCargoItems = data.items.map((item: any, index: number) => {
                              // 确保所有字段都是数字并保留2位小数
-                             const length = item.length ? Number(item.length).toFixed(2) : '';
-                             const width = item.width ? Number(item.width).toFixed(2) : '';
-                             const height = item.height ? Number(item.height).toFixed(2) : '';
-                             const weight = item.weight ? Number(item.weight).toFixed(2) : '';
-                             const quantity = item.quantity ? String(Math.round(item.quantity)) : '1';
+                             const lenNum = item.length ? Number(item.length) : NaN;
+                             const widNum = item.width ? Number(item.width) : NaN;
+                             const heiNum = item.height ? Number(item.height) : NaN;
+                             const wgtNum = item.weight ? Number(item.weight) : NaN;
+                             const qtyNum = item.quantity ? Number(item.quantity) : NaN;
+                             
+                             const length = (!isNaN(lenNum) && lenNum > 0) ? lenNum.toFixed(2) : '';
+                             const width  = (!isNaN(widNum) && widNum > 0)  ? widNum.toFixed(2) : '';
+                             const height = (!isNaN(heiNum) && heiNum > 0)  ? heiNum.toFixed(2) : '';
+                             const weight = (!isNaN(wgtNum) && wgtNum > 0)  ? wgtNum.toFixed(2) : '';
+                             const quantity = (!isNaN(qtyNum) && qtyNum > 0) ? String(Math.round(qtyNum)) : '1';
                              
                              return {
                                id: (index + 1).toString(),
@@ -556,6 +562,15 @@ export default function CombinedCalculator() {
                                quantity
                              };
                            });
+                           
+                           // 校验：至少有一个货物的长宽高有效才填入
+                           const hasValidData = updatedCargoItems.some(
+                             item => item.length !== '' || item.width !== '' || item.height !== '' || item.weight !== ''
+                           );
+                           if (!hasValidData) {
+                             toast.error("AI返回的数据无效，未能提取到尺寸/重量信息，请检查输入内容");
+                             return;
+                           }
                            
                            // 设置货物项
                            setCargoItems(updatedCargoItems);
