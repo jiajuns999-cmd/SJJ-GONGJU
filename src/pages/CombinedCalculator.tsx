@@ -572,7 +572,7 @@ export default function CombinedCalculator() {
                            }, 0);
                            
                            setTotalActualWeight(totalActualWeight.toFixed(2));
-                           setTotalVolume(totalVolume.toFixed(6));
+                           setTotalVolume(totalVolume.toFixed(2));
                            
                            toast.success(`成功识别 ${data.items.length} 个货物信息，已自动转换单位为厘米`);
                          } else {

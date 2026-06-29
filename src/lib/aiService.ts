@@ -32,14 +32,15 @@ export async function recognizeTextWithZhipu(text: string, toolType: 'textQuote'
 文本：${text}`;
     } else if (toolType === 'inquiryOrganizer') {
       systemPrompt = "你是物流询价信息提取助手，只返回JSON，不输出任何解释。";
-      userPrompt = `从以下文本提取询价信息，只返回JSON：
-{"country":"","product":"","items":[{"length":cm数值,"width":cm数值,"height":cm数值,"weight":kg数值,"quantity":数值}],"totalWeight":"","totalVolume":"","zipCode":"","address":""}
+      userPrompt = `从以下文本提取询价信息，只返回JSON（所有尺寸用厘米，重量用千克，数值用数字类型）：
+{"country":"中国","product":"电子产品","items":[{"length":30,"width":20,"height":15,"weight":2.5,"quantity":10}],"totalWeight":"25","totalVolume":"0.09","zipCode":"10001","address":"纽约"}
+以上仅为格式示例，请按实际文本内容填写。
 文本：${text}`;
     } else {
       systemPrompt = "你是物流尺寸重量信息提取助手，只返回JSON，不输出任何解释。";
-      userPrompt = `从以下文本提取货物尺寸重量信息，只返回JSON：
-{"items":[{"length":cm数值,"width":cm数值,"height":cm数值,"weight":kg数值,"quantity":数值}]}
-尺寸统一转换为厘米，忽略地址信息。
+      userPrompt = `从以下文本提取货物尺寸重量信息，只返回JSON（尺寸统一为厘米，重量为千克，数值用数字类型不要带单位）：
+{"items":[{"length":30,"width":20,"height":15,"weight":2.5,"quantity":10}]}
+以上仅为格式示例，请按实际文本内容填写。忽略地址信息。
 文本：${text}`;
     }
 
