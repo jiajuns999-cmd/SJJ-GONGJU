@@ -16,33 +16,23 @@ export async function recognizeTextWithZhipu(text: string, toolType: 'textQuote'
   try {
     let systemPrompt = "";
     let userPrompt = "";
-    
-    // 根据工具类型设置完全独立的提示词，确保识别逻辑完全分离
+
+    // 根据工具类型设置完全独立的提示词
     if (toolType === 'textQuote') {
-      systemPrompt = "你是物流报价信息提取助手，只返回JSON，不输出任何解释。";
-      userPrompt = `从以下文本提取物流报价信息，只返回JSON：
-{"country":"","address":"","zipCode":"","product":"","chargeableWeight":"","estimatedQuantity":""}
-不要提取尺寸信息。
-文本：${text}`;
+      systemPrompt = "你是物流报价信息提取助手。用户输入物流文本,你提取国家/地址/邮编/产品/计费重/件数。只输出JSON,不输出任何文字。";
+      userPrompt = `提取物流报价信息。输出格式: {"country":"国家","address":"地址","zipCode":"邮编","product":"品名","chargeableWeight":"计费重","estimatedQuantity":"件数"}。不要提取尺寸信息。\n\n文本: ${text}`;
      } else if (toolType === 'fullContainerQuote') {
-      systemPrompt = "你是整柜物流报价信息提取助手，只返回JSON，不输出任何解释。";
-      userPrompt = `从以下文本提取整柜物流报价信息，只返回JSON：
-{"productName":"","hsCode":"","declaredValue":"","containerType":"","destination":"起运港-目的港","exchangeRate":"","shippingCompany":"","seaFreight":"","domesticPortFee":"","foreignCustomsDuty":"","domesticTruckingFee":"","foreignTruckingFee":"","foreignPortFee":"700","receiverAddress":"","note":""}
-费用字段只填纯数字，国外港杂固定"700"。
-文本：${text}`;
+      systemPrompt = "你是整柜物流报价信息提取助手。用户输入整柜报价文本,你提取品名/HS编码/货值/柜型/起运港-目的港/汇率/船公司/费用等信息。只输出JSON,不输出任何文字。";
+      userPrompt = `提取整柜物流报价信息。输出格式: {"productName":"","hsCode":"","declaredValue":"","containerType":"","destination":"起运港-目的港","exchangeRate":"","shippingCompany":"","seaFreight":"","domesticPortFee":"","foreignCustomsDuty":"","domesticTruckingFee":"","foreignTruckingFee":"","foreignPortFee":"700","receiverAddress":"","note":""}。费用字段只填纯数字,国外港杂固定填700。找不到的字段填空字符串。\n\n文本: ${text}`;
     } else if (toolType === 'inquiryOrganizer') {
-      systemPrompt = "你是物流询价信息提取助手，只返回JSON，不输出任何解释。";
-      userPrompt = `从以下文本提取询价信息，只返回JSON（所有尺寸用厘米，重量用千克，数值用数字类型）：
-{"country":"中国","product":"电子产品","items":[{"length":30,"width":20,"height":15,"weight":2.5,"quantity":10}],"totalWeight":"25","totalVolume":"0.09","zipCode":"10001","address":"纽约"}
-以上仅为格式示例，请按实际文本内容填写。
-文本：${text}`;
+      systemPrompt = "你是物流询价信息提取助手。用户输入询价文本,你提取国家/品名/尺寸明细/总重量/总方数/邮编/地址。只输出JSON,不输出任何文字。";
+      userPrompt = `提取询价信息。规则: 尺寸统一为厘米,重量为千克,数值用数字类型不带单位。输出格式: {"country":"","product":"","items":[{"length":数字,"width":数字,"height":数字,"weight":数字,"quantity":数字}],"totalWeight":"","totalVolume":"","zipCode":"","address":""}。\n\n文本: ${text}`;
     } else {
-      systemPrompt = "你是物流尺寸重量信息提取助手，只返回JSON，不输出任何解释。";
-      userPrompt = `从以下文本提取货物尺寸重量信息，只返回JSON（尺寸统一为厘米，重量为千克，数值用数字类型不要带单位）：
-{"items":[{"length":30,"width":20,"height":15,"weight":2.5,"quantity":10}]}
-以上仅为格式示例，请按实际文本内容填写。忽略地址信息。
-文本：${text}`;
+      systemPrompt = "你是物流尺寸重量信息提取助手。用户输入货物描述文本,你提取长/宽/高(厘米)/单件重量(千克)/件数。只输出JSON,不输出任何文字。";
+      userPrompt = `提取货物尺寸重量信息。规则: 1)所有尺寸统一为厘米 2)重量为千克 3)数值用数字类型不带单位 4)多个货物分别列出 5)忽略地址/国家/邮编等信息。输出格式: {"items":[{"length":数字,"width":数字,"height":数字,"weight":数字,"quantity":数字}]}。\n\n文本: ${text}`;
     }
+
+    console.log("[AI识别] 开始调用API, toolType:", toolType, "输入长度:", text.length);
 
     const response = await fetch(`${ZHIPU_API_BASE_URL}/chat/completions`, {
       method: "POST",
@@ -51,7 +41,7 @@ export async function recognizeTextWithZhipu(text: string, toolType: 'textQuote'
         "Authorization": `Bearer ${ZHIPU_API_KEY}`
       },
       body: JSON.stringify({
-        model: "Qwen/Qwen2.5-7B-Instruct",
+        model: "deepseek-ai/DeepSeek-V3",
         messages: [
           {
             role: "system",
@@ -62,80 +52,82 @@ export async function recognizeTextWithZhipu(text: string, toolType: 'textQuote'
             content: userPrompt
           }
         ],
-        temperature: 0.1,
+        temperature: 0,
         max_tokens: 800
       })
     });
 
     if (!response.ok) {
-      throw new Error(`API请求失败: ${response.status}`);
+      const errorBody = await response.text();
+      console.error("[AI识别] API返回错误:", response.status, errorBody);
+      throw new Error(`API请求失败: ${response.status} - ${errorBody}`);
     }
 
     const data = await response.json();
     const result = data.choices?.[0]?.message?.content || "";
-    
+    console.log("[AI识别] API原始返回:", result.substring(0, 500));
+
     // 尝试解析JSON结果
     try {
-      // 提取JSON部分（有些情况下返回可能包含额外的文本说明）
-      const jsonMatch = result.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const parsedData = JSON.parse(jsonMatch[0]);
-        
-        // 确保返回的数据格式符合预期
-        if (toolType === 'textQuote') {
-          // 对于文字报价工具，确保返回的是扁平对象，并且不包含任何尺寸相关字段
-          return {
-            country: parsedData.country || '',
-            address: parsedData.address || '',
-            zipCode: parsedData.zipCode || '',
-            product: parsedData.product || '',
-            chargeableWeight: parsedData.chargeableWeight || '',
-            estimatedQuantity: parsedData.estimatedQuantity || '',
-            // 明确排除可能存在的尺寸相关字段
-            length: undefined,
-            width: undefined,
-            height: undefined,
-            items: undefined
-          };
-        } else if (toolType === 'calculator') {
-          // 对于计算工具，确保返回的是包含items数组的对象，并且不包含任何地址相关字段
-          return {
-            items: Array.isArray(parsedData.items) ? parsedData.items : [],
-            // 明确排除可能存在的地址相关字段
-            country: undefined,
-            address: undefined,
-            zipCode: undefined,
-            product: undefined
-          };
-        } else if (toolType === 'inquiryOrganizer') {
-          // 对于询价整理工具，确保返回完整的结构
-           return {
-            country: parsedData.country || '',
-            product: parsedData.product || '',
-            items: Array.isArray(parsedData.items) ? parsedData.items : [],
-            totalWeight: parsedData.totalWeight || '',
-            totalVolume: parsedData.totalVolume || '',
-            zipCode: parsedData.zipCode || '',
-            address: parsedData.address || '',
-            serviceProvider: parsedData.serviceProvider || '',
-            channel: parsedData.channel || ''
-          };
+      // 提取JSON部分（处理模型可能包裹的markdown代码块或额外文字）
+      let jsonStr = result;
+      // 先尝试提取 ```json ... ``` 中的内容
+      const codeBlockMatch = result.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (codeBlockMatch) {
+        jsonStr = codeBlockMatch[1].trim();
+      } else {
+        // 尝试提取最外层的 {} 内容
+        const jsonMatch = result.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          jsonStr = jsonMatch[0];
         }
-        
-        return parsedData;
       }
-      const parsedResult = JSON.parse(result);
-      return parsedResult;
+      
+      const parsedData = JSON.parse(jsonStr);
+      console.log("[AI识别] JSON解析成功:", JSON.stringify(parsedData).substring(0, 300));
+
+      // 确保返回的数据格式符合预期
+      if (toolType === 'textQuote') {
+        return {
+          country: parsedData.country || '',
+          address: parsedData.address || '',
+          zipCode: parsedData.zipCode || '',
+          product: parsedData.product || '',
+          chargeableWeight: parsedData.chargeableWeight || '',
+          estimatedQuantity: parsedData.estimatedQuantity || '',
+          length: undefined, width: undefined, height: undefined, items: undefined
+        };
+      } else if (toolType === 'calculator') {
+        const items = Array.isArray(parsedData.items) ? parsedData.items : [];
+        console.log("[AI识别] calculator items数量:", items.length, "第一条:", items[0]);
+        return {
+          items,
+          country: undefined, address: undefined, zipCode: undefined, product: undefined
+        };
+      } else if (toolType === 'inquiryOrganizer') {
+        return {
+          country: parsedData.country || '',
+          product: parsedData.product || '',
+          items: Array.isArray(parsedData.items) ? parsedData.items : [],
+          totalWeight: parsedData.totalWeight || '',
+          totalVolume: parsedData.totalVolume || '',
+          zipCode: parsedData.zipCode || '',
+          address: parsedData.address || '',
+          serviceProvider: parsedData.serviceProvider || '',
+          channel: parsedData.channel || ''
+        };
+      }
+
+      return parsedData;
     } catch (e) {
-      console.error("JSON解析失败:", e);
-      // 如果解析失败，返回包含原始文本的对象
-      return { 
+      console.error("[AI识别] JSON解析失败:", e, "\n原始返回:", result.substring(0, 300));
+      return {
         rawText: result,
-        error: "解析失败" 
+        error: `解析失败: ${result.substring(0, 100)}`
       };
     }
   } catch (error) {
-    console.error("智谱API调用错误:", error);
+    console.error("[AI识别] 调用错误:", error);
     throw error;
   }
 }

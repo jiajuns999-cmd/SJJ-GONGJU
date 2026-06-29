@@ -530,9 +530,10 @@ export default function CombinedCalculator() {
                         <AITextRecognizer 
                        toolType="calculator"
                        onRecognize={(data) => {
+                         console.log("[CombinedCalculator] onRecognize 数据:", JSON.stringify(data).substring(0, 500));
                          // 检查是否有解析错误
                          if (data.error) {
-                           toast.error("AI识别解析失败，请检查输入内容并重试");
+                           toast.error(`AI识别失败: ${data.error}`);
                            return;
                          }
                          
