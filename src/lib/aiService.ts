@@ -19,106 +19,28 @@ export async function recognizeTextWithZhipu(text: string, toolType: 'textQuote'
     
     // 根据工具类型设置完全独立的提示词，确保识别逻辑完全分离
     if (toolType === 'textQuote') {
-      // 文字报价工具的识别模板 - 重点识别国家、地址、邮编等信息，完全忽略尺寸信息
-      systemPrompt = "你是一个专业的物流报价信息识别助手，专门用于提取文字报价相关信息。请严格按照要求提取信息，绝对不要包含任何与尺寸相关的信息，也不要处理任何尺寸相关的计算。";
-      userPrompt = `请严格按照以下要求从文本中提取物流报价相关信息：
-1. 重点识别：国家(country)、地址(address)、邮编(zipCode)、产品(product)、计费重(chargeableWeight)、件数(estimatedQuantity)等信息
-2. 请完全忽略文本中的尺寸信息，绝对不要尝试提取或计算任何与尺寸相关的数据
-3. 确保每个字段都使用英文名称作为键名
-4. 如果只提供了总重量和总件数，请计算出计费重
-5. 请以严格的JSON格式返回结果，不要包含任何额外的解释或说明文字，只返回识别到的字段：
-{
-  "country": "识别到的国家名称",
-  "address": "识别到的地址",
-  "zipCode": "识别到的邮编",
-  "product": "识别到的产品",
-  "chargeableWeight": "识别到的计费重",
-  "estimatedQuantity": "识别到的件数"
-}
-
-文本内容：${text}`;
+      systemPrompt = "你是物流报价信息提取助手，只返回JSON，不输出任何解释。";
+      userPrompt = `从以下文本提取物流报价信息，只返回JSON：
+{"country":"","address":"","zipCode":"","product":"","chargeableWeight":"","estimatedQuantity":""}
+不要提取尺寸信息。
+文本：${text}`;
      } else if (toolType === 'fullContainerQuote') {
-      // 整柜文字报价工具的识别模板 - 完全独立于其他工具的识别逻辑
-      systemPrompt = "你是一个专业的整柜物流报价信息识别助手，需要从用户提供的文本中精准提取整柜物流报价相关信息。特别需要注意识别品名、HS编码和货值这三个独立字段。请以结构化的JSON格式返回识别结果，确保数据准确无误。";
-      userPrompt = `请严格按照以下要求从文本中提取信息：
-1. 重点识别：品名(productName)、HS编码(hsCode)、货值(declaredValue)、柜型(containerType)、起运港和目的港（合并为destination字段，格式：起运港-目的港，例如：天津港（CNTXG）-芝加哥（USCHI））、汇率(exchangeRate)、船公司(shippingCompany)、海运费(seaFreight)、国内港杂(domesticPortFee)、国外关税(foreignCustomsDuty)、国内拖车费(domesticTruckingFee)、国外拖车费(foreignTruckingFee)、收件地址(receiverAddress)、报价补充信息（放入note字段）等信息
-2. 品名、HS编码、货值是三个独立字段，请务必分别识别
-3. 确保每个字段都使用英文名称作为键名
-4. 国外港杂(foreignPortFee)固定填入"700"
-5. 请完全忽略任何与尺寸、重量相关的信息，也不要处理任何与文字报价或计算报价工具相关的内容
-6. 请以严格的JSON格式返回结果，不要包含任何额外的解释或说明文字，只返回识别到的字段：
-{
-  "productName": "识别到的品名",
-  "hsCode": "识别到的HS编码",
-  "declaredValue": "识别到的货值",
-  "containerType": "识别到的柜型",
-  "destination": "识别到的起运港和目的港（格式：起运港-目的港）",
-  "exchangeRate": "识别到的汇率",
-  "shippingCompany": "识别到的船公司",
-  "seaFreight": "识别到的海运费",
-  "domesticPortFee": "识别到的国内港杂",
-  "foreignCustomsDuty": "识别到的国外关税",
-  "domesticTruckingFee": "识别到的国内拖车费",
-  "foreignTruckingFee": "识别到的国外拖车费",
-  "foreignPortFee": "700",
-  "receiverAddress": "识别到的收件地址",
-  "note": "识别到的报价补充信息"
-}
-
-文本内容：${text}`;
+      systemPrompt = "你是整柜物流报价信息提取助手，只返回JSON，不输出任何解释。";
+      userPrompt = `从以下文本提取整柜物流报价信息，只返回JSON：
+{"productName":"","hsCode":"","declaredValue":"","containerType":"","destination":"起运港-目的港","exchangeRate":"","shippingCompany":"","seaFreight":"","domesticPortFee":"","foreignCustomsDuty":"","domesticTruckingFee":"","foreignTruckingFee":"","foreignPortFee":"700","receiverAddress":"","note":""}
+费用字段只填纯数字，国外港杂固定"700"。
+文本：${text}`;
     } else if (toolType === 'inquiryOrganizer') {
-      // 询价信息整理工具的识别模板
-      systemPrompt = "你是一个专业的物流询价信息整理助手，需要从用户提供的文本中精准提取询价相关信息。请以结构化的JSON格式返回识别结果，确保数据准确无误。";
-      userPrompt = `请严格按照以下要求从文本中提取信息：
-1. 重点识别：国家(country)、品名(product)、尺寸(items)、总重量(totalWeight)、总方数(totalVolume)、邮编(zipCode)、地址(address)等信息
-2. 尺寸信息需要包含长宽高、单件重量和件数，如果有多个尺寸的货物，请在items数组中为每个货物单独列出信息
-3. 确保每个字段都使用英文名称作为键名
-4. 请以严格的JSON格式返回结果，不要包含任何额外的解释或说明文字，只返回识别到的字段：
-{
-  "country": "识别到的国家名称",
-  "product": "识别到的品名",
-  "items": [
-    {
-      "length": 数值, // 单位：厘米
-      "width": 数值, // 单位：厘米
-      "height": 数值, // 单位：厘米
-      "weight": 数值, // 单位：千克
-      "quantity": 数值 // 件数
-    }
-    // 如有多个货物，继续添加
-  ],
-  "totalWeight": "识别到的总重量",
-  "totalVolume": "识别到的总方数",
-  "zipCode": "识别到的邮编",
-  "address": "识别到的地址"
-}
-
-文本内容：${text}`;
+      systemPrompt = "你是物流询价信息提取助手，只返回JSON，不输出任何解释。";
+      userPrompt = `从以下文本提取询价信息，只返回JSON：
+{"country":"","product":"","items":[{"length":cm数值,"width":cm数值,"height":cm数值,"weight":kg数值,"quantity":数值}],"totalWeight":"","totalVolume":"","zipCode":"","address":""}
+文本：${text}`;
     } else {
-      // 计算工具的识别模板（默认）- 重点识别尺寸和重量信息，完全忽略地址信息
-      systemPrompt = "你是一个专业的物流尺寸和重量识别助手，需要从用户提供的文本中精准提取货物的尺寸、重量和件数信息。请以结构化的JSON格式返回识别结果，确保数据准确无误。";
-      userPrompt = `请严格按照以下要求从文本中提取信息：
-1. 重点识别箱规尺寸信息：长(length)、宽(width)、高(height)，并将所有单位自动转换为厘米(cm)
-2. 识别单件重量(weight)和件数(quantity)
-3. 如果只提供了总重量和总件数，请计算出单件重量，并保留2位小数
-4. 如果文本中包含多个不同尺寸的货物，请在items数组中为每个货物单独列出信息
-5. 确保每个货物项目都有完整的长、宽、高、重量和件数，所有数值请使用数字类型
-6. 请完全忽略文本中的国家、地址、邮编等非尺寸重量相关信息
-7. 请以严格的JSON格式返回结果，不要包含任何额外的解释或说明文字：
-{
-  "items": [
-    {
-      "length": 数值, // 单位：厘米
-      "width": 数值, // 单位：厘米
-      "height": 数值, // 单位：厘米
-      "weight": 数值, // 单位：千克，保留2位小数
-      "quantity": 数值 // 件数
-    }
-    // 如有多个货物，继续添加
-  ]
-}
-
-文本内容：${text}`;
+      systemPrompt = "你是物流尺寸重量信息提取助手，只返回JSON，不输出任何解释。";
+      userPrompt = `从以下文本提取货物尺寸重量信息，只返回JSON：
+{"items":[{"length":cm数值,"width":cm数值,"height":cm数值,"weight":kg数值,"quantity":数值}]}
+尺寸统一转换为厘米，忽略地址信息。
+文本：${text}`;
     }
 
     const response = await fetch(`${ZHIPU_API_BASE_URL}/chat/completions`, {
@@ -128,7 +50,7 @@ export async function recognizeTextWithZhipu(text: string, toolType: 'textQuote'
         "Authorization": `Bearer ${ZHIPU_API_KEY}`
       },
       body: JSON.stringify({
-        model: "deepseek-ai/DeepSeek-V4-Pro",
+        model: "Qwen/Qwen2.5-7B-Instruct",
         messages: [
           {
             role: "system",
@@ -139,8 +61,8 @@ export async function recognizeTextWithZhipu(text: string, toolType: 'textQuote'
             content: userPrompt
           }
         ],
-        temperature: 0.1, // 降低温度提高准确性
-        max_tokens: 2000
+        temperature: 0.1,
+        max_tokens: 800
       })
     });
 
