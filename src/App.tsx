@@ -7,7 +7,6 @@ import CombinedCalculator from "@/pages/CombinedCalculator";
 import WeightPriceCalculator from "@/pages/WeightPriceCalculator";
 import FullContainerTextQuote from "@/pages/FullContainerTextQuote";
 import InquiryOrganizer from "@/pages/InquiryOrganizer";
-import AIModelBadge from "@/components/AIModelBadge";
 import { QuoteSyncProvider } from "@/contexts/quoteSyncContext";
 
 export default function App() {
@@ -24,7 +23,6 @@ export default function App() {
             <Route path="/full-container-text-quote" element={<FullContainerTextQuote />} />
             <Route path="/inquiry-organizer" element={<InquiryOrganizer />} />
           </Routes>
-          <AIModelBadge />
         </Layout>
       </BrowserRouter>
     </QuoteSyncProvider>
