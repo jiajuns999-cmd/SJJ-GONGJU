@@ -1817,7 +1817,7 @@ export default function CombinedCalculator() {
       
       {/* 底部 */}
       <footer className="mt-12 pt-6 border-t border-gray-200 dark:border-gray-800 text-center text-gray-500 dark:text-gray-400">
-        <p>© 2025 沈家俊工具箱 - 尺寸与重货方价计算</p>
+        <p>© 2026 沈家俊工具箱 - 尺寸与重货方价计算</p>
       </footer>
       
 
