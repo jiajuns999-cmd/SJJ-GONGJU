@@ -733,6 +733,15 @@ export default function TrackingNumberGenerator() {
               )}
             </motion.button>
             
+            {/* 一键清空按钮 */}
+            <button
+              onClick={clearAllInputs}
+              className="px-5 py-2.5 rounded-xl font-medium bg-red-500 hover:bg-red-600 text-white transition-all flex items-center"
+            >
+              <i className="fa-solid fa-eraser mr-2"></i>
+              清空
+            </button>
+
             {/* 复制全部按钮 */}
             {trackingNumbers.length > 0 && (
               <button
