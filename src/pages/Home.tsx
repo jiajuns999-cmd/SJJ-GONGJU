@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom';
     {
       id: 'inquiry-organizer',
       title: '询价整理',
-      description: 'AI识别信息并生成统一格式的询价信息',
+      description: '整理询价信息并生成统一格式的询价文本',
       icon: 'fa-file-alt',
       color: 'from-indigo-400 to-purple-500',
       link: '/inquiry-organizer'
