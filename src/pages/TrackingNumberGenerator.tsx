@@ -459,13 +459,8 @@ export default function TrackingNumberGenerator() {
     toast.success('已清空所有填写信息');
   };
   
-  // 导出进仓单为Word文件
+  // 导出进仓单为Word文件（已生成单号则带单号导出，未生成也可直接导出进仓单）
   const handleExportWord = () => {
-    if (trackingNumbers.length === 0) {
-      toast.error('请先生成物流单号');
-      return;
-    }
-    
     const selectedWarehouse = WAREHOUSES.find(w => w.id === warehouseId);
     const selectedPackageType = PACKAGE_TYPES.find(p => p.id === packageType);
     
@@ -779,16 +774,14 @@ export default function TrackingNumberGenerator() {
           </div>
           
           <div className="flex flex-wrap gap-3 mt-3">
-            {/* 导出按钮组 */}
-            {trackingNumbers.length > 0 && (
-              <button
-                onClick={handleExportWord}
-                className="px-5 py-2.5 rounded-xl font-medium bg-amber-600 hover:bg-amber-700 text-white transition-all flex items-center"
-              >
-                <i className="fa-solid fa-file-word mr-2"></i>
-                导出Word文档
-              </button>
-            )}
+            {/* 导出按钮组 - 常显，随时可导出进仓单 */}
+            <button
+              onClick={handleExportWord}
+              className="px-5 py-2.5 rounded-xl font-medium bg-amber-600 hover:bg-amber-700 text-white transition-all flex items-center"
+            >
+              <i className="fa-solid fa-file-word mr-2"></i>
+              导出Word文档
+            </button>
           </div>
         </motion.div>
         
@@ -979,25 +972,23 @@ export default function TrackingNumberGenerator() {
             </table>
           </div>
           
-          {/* 导出按钮 */}
-          {trackingNumbers.length > 0 && (
-            <div className="mt-6">
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={handleExportWord}
-                className="w-full px-6 py-3 rounded-xl font-medium bg-amber-600 hover:bg-amber-700 text-white transition-all flex items-center justify-center"
-              >
-                <i className="fa-solid fa-file-word mr-2"></i>
-                导出Word文档
-              </motion.button>
-            </div>
-          )}
-          
+          {/* 导出按钮 - 常显 */}
+          <div className="mt-6">
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={handleExportWord}
+              className="w-full px-6 py-3 rounded-xl font-medium bg-amber-600 hover:bg-amber-700 text-white transition-all flex items-center justify-center"
+            >
+              <i className="fa-solid fa-file-word mr-2"></i>
+              导出Word文档
+            </motion.button>
+          </div>
+
           <div className="mt-8 text-xs text-gray-500 dark:text-gray-400 text-center">
             <p className="flex items-start justify-center">
               <i className="fa-solid fa-info-circle mt-0.5 mr-1 text-blue-500"></i>
-              填写的信息会实时更新到预览中，生成单号后可导出为Word文档。
+              填写的信息会实时更新到预览中，可随时导出为Word文档。
             </p>
           </div>
         </motion.div>
