@@ -5,8 +5,6 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import ToolShortcuts from "@/components/ToolShortcuts";
 import { QuoteSyncContext } from "@/contexts/quoteSyncContext";
-import AITextRecognizer from "@/components/AITextRecognizer";
-import { extractField } from "@/lib/aiService";
 
 interface QuoteHistory {
     id: string;
@@ -971,94 +969,6 @@ ${getNotes()}`;
                              className={`px-4 py-2 rounded-xl text-sm font-medium flex items-center ${isDark ? "bg-gray-800 text-gray-200 hover:bg-gray-700" : "bg-gray-100 text-gray-800 hover:bg-gray-200"} transition-all`}>
                              <i className="fa-solid fa-history mr-2"></i>报价历史
                          </motion.button>
-                 <AITextRecognizer 
-                          toolType="textQuote"
-                          onRecognize={(data) => {
-                            // 检查是否有解析错误
-                            if (data.error) {
-                              toast.error("AI识别解析失败，请检查输入内容并重试");
-                              return;
-                            }
-                            
-                            // 确保只处理文字报价相关数据，严格过滤掉任何可能混入的尺寸相关字段
-                            // 计费重、预估件数只保留纯数字（去掉单位等）
-                            const cleanNumber = (val: any) => {
-                              if (!val) return '';
-                              const str = String(val);
-                              // 提取数字（包括小数）
-                              const match = str.match(/[\d.]+/);
-                              return match ? match[0] : '';
-                            };
-                            const textQuoteData = {
-                              country: data.country || '',
-                              address: data.address || '',
-                              zipCode: data.zipCode || '',
-                              product: data.product || '',
-                              chargeableWeight: cleanNumber(data.chargeableWeight),
-                              estimatedQuantity: cleanNumber(data.estimatedQuantity)
-                              // 明确不包含任何尺寸相关字段
-                            };
-                            
-                            // 处理识别结果并填充到表单，只更新与文字报价相关的字段
-                            setFormData(prev => ({
-                              ...prev,
-                              country: textQuoteData.country,
-                              address: textQuoteData.address,
-                              zipCode: textQuoteData.zipCode,
-                              product: textQuoteData.product,
-                              chargeableWeight: textQuoteData.chargeableWeight,
-                              estimatedQuantity: textQuoteData.estimatedQuantity
-                            }));
-                            
-                            // 当识别到国家时，自动处理国家选择逻辑
-                            const recognizedCountry = textQuoteData.country;
-                            if (recognizedCountry) {
-                              // 检查是否为欧盟国家
-                              const isEuCountry = EU_COUNTRIES.some(country => 
-                                country.label.includes(recognizedCountry) || 
-                                recognizedCountry.includes(country.label)
-                              );
-                              
-                              // 检查是否为东南亚国家
-                              const isSeaCountry = SEA_COUNTRIES.some(country => 
-                                country.label.includes(recognizedCountry) || 
-                                recognizedCountry.includes(country.label)
-                              );
-                              
-                              // 检查是否为预设国家
-                              const presetCountry = COUNTRIES.find(country => 
-                                country.label.includes(recognizedCountry) || 
-                                recognizedCountry.includes(country.label)
-                              );
-                              
-                              // 设置相应的状态
-                              if (isEuCountry) {
-                                setShowEuCountrySelect(true);
-                              } else if (isSeaCountry) {
-                                setShowSeaCountrySelect(true);
-                              } else if (presetCountry) {
-                                // 选择预设国家
-                                setFormData(prev => ({ ...prev, country: presetCountry.value }));
-                                setSelectedEuCountry(null);
-                                setSelectedSeaCountry(null);
-                              } else {
-                                // 设置为自定义国家
-                                setCustomCountry(recognizedCountry);
-                              }
-                              
-                              toast.success(`已自动识别并选择国家: ${recognizedCountry}`);
-                            }
-                            
-                            // 如果识别到了数据，显示成功提示
-                            const hasData = Object.values(textQuoteData).some(value => value !== undefined && value !== null && value !== '');
-                            if (hasData) {
-                              toast.success("AI识别成功！已自动填充相关信息");
-                            } else {
-                              toast.warning("未识别到有效信息，请检查输入内容");
-                            }
-                          }}
-                          placeholder="请输入物流报价相关文本，AI将重点识别国家、地址、邮编、产品、计费重、件数等信息..."
-                         />
                      </div>
                   </div>
                </header>
