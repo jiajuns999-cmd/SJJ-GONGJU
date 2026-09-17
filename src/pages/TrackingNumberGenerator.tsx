@@ -445,6 +445,19 @@ export default function TrackingNumberGenerator() {
     setTrackingNumbers([]);
     toast.info('已清空结果');
   };
+
+  // 一键清空所有填写信息（恢复默认值）
+  const clearAllInputs = () => {
+    setItemCount('1');
+    setPackageType('carton');
+    setWarehouseId('shanghai-express');
+    setChannel('');
+    setCustomCode('');
+    setCustomSalesPerson('');
+    setCustomPhone('');
+    setTrackingNumbers([]);
+    toast.success('已清空所有填写信息');
+  };
   
   // 导出进仓单为Word文件
   const handleExportWord = () => {
