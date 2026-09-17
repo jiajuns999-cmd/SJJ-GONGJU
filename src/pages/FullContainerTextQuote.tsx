@@ -539,7 +539,7 @@ export default function FullContainerTextQuote() {
             
             <div class="footer">
                 <p>报价日期: ${new Date().toLocaleDateString()}</p>
-                <p>© 2025 上海湘诚国际物流有限公司 - 整柜报价单</p>
+                <p>© 2026 上海湘诚国际物流有限公司 - 整柜报价单</p>
             </div>
         </div>
     </body>
@@ -1203,7 +1203,7 @@ export default function FullContainerTextQuote() {
       
       {/* 底部区域 */}
       <footer className="mt-12 pt-6 border-t border-gray-200 dark:border-gray-800 text-center text-gray-500 dark:text-gray-400">
-        <p>© 2025 沈家俊工具箱 - 整柜文字报价工具</p>
+        <p>© 2026 沈家俊工具箱 - 整柜文字报价工具</p>
       </footer>
        
     </div>
