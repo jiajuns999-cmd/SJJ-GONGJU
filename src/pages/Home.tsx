@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { useTheme } from '@/hooks/useTheme';
 
   // 工具项目数据
   const tools = [
@@ -52,18 +51,9 @@ import { useTheme } from '@/hooks/useTheme';
       color: 'from-purple-400 to-pink-500',
       link: '/tracking-number-generator'
     },
-    {
-      id: 'broadcast-copywriter',
-      title: '群发文案',
-      description: 'AI 一键生成微信群发文案，营销推广与问候关怀全覆盖',
-      icon: 'fa-paper-plane',
-      color: 'from-rose-400 to-pink-500',
-      link: '/broadcast-copywriter'
-    }
   ];
 
 export default function Home() {
-  const { theme, toggleTheme, isDark } = useTheme();
   
   return (
     <div className="min-h-[calc(100vh-32px)] flex flex-col">
@@ -81,20 +71,6 @@ export default function Home() {
             专业的物流与文字服务工具集合，让您的工作更加高效便捷
           </p>
         </motion.div>
-        
-        {/* 主题切换按钮 */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="mt-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-          onClick={toggleTheme}
-        >
-          {isDark ? (
-            <i className="fa-solid fa-sun text-xl"></i>
-          ) : (
-            <i className="fa-solid fa-moon text-xl"></i>
-          )}
-        </motion.button>
       </header>
       
       {/* 工具卡片区域 */}
@@ -144,7 +120,7 @@ export default function Home() {
       
       {/* 底部区域 */}
       <footer className="mt-12 pt-6 border-t border-gray-200 dark:border-gray-800 text-center text-gray-500 dark:text-gray-400">
-        <p>© 2025 沈家俊工具箱 - 专业的工具集合</p>
+        <p>© 2026 沈家俊工具箱 - 专业的工具集合</p>
       </footer>
     </div>
   );
