@@ -4,8 +4,6 @@ import { useTheme } from "@/hooks/useTheme";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import ToolShortcuts from "@/components/ToolShortcuts";
-import AITextRecognizer from "@/components/AITextRecognizer";
-import { extractField } from "@/lib/aiService";
 
 // 定义报价历史记录接口
 interface QuoteHistory {
@@ -644,31 +642,6 @@ export default function FullContainerTextQuote() {
              >
                <i className="fa-solid fa-history mr-2"></i>报价历史
              </motion.button>
-              <AITextRecognizer 
-               toolType="fullContainerQuote"
-               onRecognize={(data) => {
-                 // 处理识别结果并填充到表单
-                  setFormData(prev => ({
-                    ...prev,
-                    productName: data.productName || '',
-                    hsCode: data.hsCode || '',
-                    declaredValue: data.declaredValue || '',
-                    containerType: data.containerType || '',
-                    destination: data.destination || '',
-                    seaFreight: data.seaFreight || '',
-                    domesticPortFee: data.domesticPortFee || '',
-                    foreignCustomsDuty: data.foreignCustomsDuty || '',
-                    domesticTruckingFee: data.domesticTruckingFee || '',
-                    foreignTruckingFee: data.foreignTruckingFee || '',
-                    foreignPortFee: data.foreignPortFee || '700', // 国外港杂固定填入700
-                    exchangeRate: data.exchangeRate || prev.exchangeRate, // 汇率按识别信息填入
-                    receiverAddress: data.receiverAddress || '',
-                    note: data.note || '',
-                    shippingCompany: data.shippingCompany || '' // 新增船公司字段
-                  }));
-               }}
-               placeholder="请输入整柜报价相关文本，AI将识别项目、柜型、目的港、各项费用等信息..."
-             />
            </div>
          </div>
         </header>
