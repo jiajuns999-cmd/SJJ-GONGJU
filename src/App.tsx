@@ -6,7 +6,6 @@ import TrackingNumberGenerator from "@/pages/TrackingNumberGenerator";
 import CombinedCalculator from "@/pages/CombinedCalculator";
 import WeightPriceCalculator from "@/pages/WeightPriceCalculator";
 import FullContainerTextQuote from "@/pages/FullContainerTextQuote";
-import InquiryOrganizer from "@/pages/InquiryOrganizer";
 import { QuoteSyncProvider } from "@/contexts/quoteSyncContext";
 
 export default function App() {
@@ -21,7 +20,6 @@ export default function App() {
             <Route path="/tracking-number-generator" element={<TrackingNumberGenerator />} />
             <Route path="/weight-price-calculator" element={<WeightPriceCalculator />} />
             <Route path="/full-container-text-quote" element={<FullContainerTextQuote />} />
-            <Route path="/inquiry-organizer" element={<InquiryOrganizer />} />
           </Routes>
         </Layout>
       </BrowserRouter>
