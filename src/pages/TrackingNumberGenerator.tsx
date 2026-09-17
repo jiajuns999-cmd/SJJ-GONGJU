@@ -515,13 +515,12 @@ export default function TrackingNumberGenerator() {
     }
   };
   
-  // 获取当前业务归属（手动输入优先，未填写则使用下拉选择）
+  // 获取当前业务归属（手动输入优先，未填写则显示*号）
   const getSelectedSalesPerson = (): string => {
     if (customSalesPerson.trim() && customPhone.trim()) {
       return `${customSalesPerson.trim()} 电话：${customPhone.trim()}`;
     }
-    const salesContact = SALES_CONTACTS[salesPersonId];
-    return salesContact ? `${salesContact.name} 电话：${salesContact.phone}` : '沈家俊 电话：15856928662';
+    return '***';
   };
   
   // 此函数已被重命名，保留以确保兼容性
