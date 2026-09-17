@@ -1038,7 +1038,7 @@ export default function TrackingNumberGenerator() {
       
       {/* 底部 */}
       <footer className="mt-12 pt-6 border-t border-gray-200 dark:border-gray-800 text-center text-gray-500 dark:text-gray-400">
-        <p>© 2025 沈家俊工具箱 - 物流单号生成</p>
+        <p>© 2026 沈家俊工具箱 - 物流单号生成</p>
       </footer>
       
 
