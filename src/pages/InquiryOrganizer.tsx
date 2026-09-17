@@ -596,7 +596,7 @@ export default function InquiryOrganizer() {
       
       {/* 底部区域 */}
       <footer className="mt-12 pt-6 border-t border-gray-200 dark:border-gray-800 text-center text-gray-500 dark:text-gray-400">
-        <p>© 2025 沈家俊工具箱 - 询价信息整理工具</p>
+        <p>© 2026 沈家俊工具箱 - 询价信息整理工具</p>
       </footer>
     </div>
   );
