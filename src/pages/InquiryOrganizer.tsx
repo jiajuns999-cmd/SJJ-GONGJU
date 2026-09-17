@@ -4,7 +4,6 @@ import { useTheme } from "@/hooks/useTheme";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import ToolShortcuts from "@/components/ToolShortcuts";
-import AITextRecognizer from "@/components/AITextRecognizer";
 
 // 定义询价信息接口
 interface InquiryData {
@@ -160,28 +159,6 @@ export default function InquiryOrganizer() {
     toast.success("询价文本已复制到剪贴板");
   };
   
-  // 处理AI识别结果
-  const handleAIRecognize = (data: any) => {
-    // 处理识别结果并填充到表单
-    const items = data.items && Array.isArray(data.items) ? data.items : [];
-    
-    // 计算并更新总重量和总方数
-    const { totalWeight, totalVolume } = calculateTotals(items);
-    
-    // 保留已填写的 serviceProvider 和 channel，只更新 AI 识别字段
-    setInquiryData(prev => ({
-      ...prev,
-      country: data.country || "",
-      product: data.product || "",
-      items,
-      totalWeight: data.totalWeight ? parseFloat(data.totalWeight).toFixed(2) : totalWeight,
-      totalVolume: data.totalVolume ? parseFloat(data.totalVolume).toFixed(2) : totalVolume,
-      zipCode: data.zipCode || "",
-      address: data.address || ""
-    }));
-    // useEffect 监听 inquiryData 变化，自动触发 generateInquiryText
-  };
-  
   // 重置表单
   const resetForm = () => {
     setInquiryData({
@@ -227,13 +204,7 @@ export default function InquiryOrganizer() {
             <i className="fa-solid fa-arrow-left mr-2"></i>返回首页
           </Link>
           <h1 className="text-2xl md:text-3xl font-bold text-center md:text-left">询价信息整理工具</h1>
-          <div className="flex justify-end">
-            <AITextRecognizer 
-              toolType="inquiryOrganizer"
-              onRecognize={handleAIRecognize}
-              placeholder="请输入询价相关文本，AI将识别国家、品名、尺寸、总重量、总方数、邮编、地址等信息..."
-            />
-          </div>
+          <div></div>
         </div>
       </header>
       
