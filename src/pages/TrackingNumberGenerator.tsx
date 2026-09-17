@@ -45,15 +45,6 @@ const WAREHOUSES = [
   }
 ];
 
-// 业务员配置
-const SALES_PERSONS = [
-  { id: 'sj', name: '沈家俊' },
-  { id: 'dk', name: '丁可' },
-  { id: 'zgj', name: '张国娟' },
-  { id: 'yzl', name: '杨子良' },
-  { id: 'lr', name: '刘瑞' }
-];
-
 // 业务员联系方式配置
 const SALES_CONTACTS: Record<string, { name: string; phone: string }> = {
   'sj': { name: '沈家俊', phone: '15856928662' },
@@ -639,28 +630,6 @@ export default function TrackingNumberGenerator() {
                  </select>
                </div>
                
-               {/* 业务员 */}
-               <div>
-                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                   业务员
-                 </label>
-                 <select
-                   value={salesPersonId}
-                   onChange={(e) => setSalesPersonId(e.target.value)}
-                   className={`w-full px-3 py-2 rounded-xl border ${
-                     isDark 
-                       ? 'bg-gray-700 border-gray-600 text-white' 
-                       : 'bg-gray-50 border-gray-200'
-                   } focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all appearance-none`}
-                 >
-                   {SALES_PERSONS.map(person => (
-                     <option key={person.id} value={person.id}>
-                       {person.name}
-                     </option>
-                   ))}
-                 </select>
-               </div>
-
                {/* 自定义业务员（手动输入） */}
                <div>
                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
