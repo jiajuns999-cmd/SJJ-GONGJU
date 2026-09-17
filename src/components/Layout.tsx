@@ -6,7 +6,6 @@ import { useTheme } from '@/hooks/useTheme';
 const navItems = [
   { to: '/', label: '首页' },
   { to: '/text-quote', label: '文字报价' },
-  { to: '/inquiry-organizer', label: '询价整理' },
   { to: '/full-container-text-quote', label: '整柜文字报价' },
   { to: '/combined-calculator', label: '计算工具' },
   { to: '/weight-price-calculator', label: '核价工具' },
